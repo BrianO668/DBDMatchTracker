@@ -1,0 +1,20 @@
+The Huntress%Meg%Bill%Kate%Feng%The Game%true%2%1
+The Trapper%Jake%Sable%Vee%Ace%Nostromo Wreckage%false%4%0
+The Unknown%Feng%Yui%Vee%Sable%Wrecker's Yard%true%1%0
+The Hillbilly%Nea%Jeff%Kate%Jane%Shelter Woods%true%1%3
+The Oni%Meg%Nea%Jane%Jake%Garden of Joy%false%2%0
+The Demogorgon%Ace%David%Bill%Sable%Racoon City%true%1%0
+The Animatronic%Felix%Feng%Sable%Kate%Toba Landing%false%4%0
+The Onryo%Feng%Yui%Meg%Kate%Silent Hill%true%3%1
+The Deathslinger%Jane%David%Bill%Ace%Red Forest%false%0%0
+The Artist%Kate%Feng%Ace%Sable%Ormond%true%1%0
+The Singularity%Jeff%Jake%Jane%Jill%Crotus Prenn Asylum%true%3%0
+The Ghost Face%Feng%Ace%Sable%Kate%Backwater Swamp%false%4%0
+The Plague%Felix%Rebecca%Leon%Jill%Coldwind Farm%true%0%1
+The Shape%Feng%Meg%Nea%David%Haddonfield%false%2%0
+The Legion%Meg%Nea%David%Vee%Autohaven Wreckers%true%1%0
+The Clown%Yui%Nea%Meg%Sable%The Macmillan Estate%true%2%0
+The Krasue%Feng%Vee%Rebecca%Cheryl%The Underground Complex%false%1%2
+The Xenomorph%Jake%Bill%Orelia%Nea%Grave of Glenvale%true%3%0
+The Executioner%Meg%David%Feng%Vee%The Shattered Square%false%3%0
+The Pig%Feng%Jill%Cheryl%Leon%Yamaoka Estate%false%2%1
