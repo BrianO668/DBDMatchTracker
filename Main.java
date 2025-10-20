@@ -1,12 +1,3 @@
-/*
-Brian Oldham
-CEN3024C-14877
-12OCT2025
-Main function of the Dead by Daylight Match Tracking System
-This program stores match information into an arraylist of Match objects and uses functions in the DataFuncs class
-to display or manipulate them in any way
-This class specifically displays the main menu and calls DataFuncs methods as selected
- */
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -66,3 +57,4 @@ public class Main {
         }
     }
 }
+
