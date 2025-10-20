@@ -1,9 +1,3 @@
-/*
-Brian Oldham
-CEN3024C-14877
-12OCT2025
-Class for accessing and manipulating Match data stored in an arraylist
- */
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -160,6 +154,7 @@ public class DataFuncs {
 
                     if (counter > 0) {
                         System.out.println("\nSuccessfully added " + counter + " match(es) from file!\n");
+                        return counter;
                     } else {
                         System.out.println("\nNo matches added!\n");
                     }
@@ -203,9 +198,9 @@ public class DataFuncs {
 
     public int EditData(ArrayList<Match> arry) { //This method looks intimidating, but it is mostly while loops for menus and error-handling
         int id;
-        String info;
-        int infoInt;
-        char infoChar;
+        String info = "";
+        int infoInt = 0;
+        //char infoChar;
         boolean switchMenu = true;
         int searchFlag = 0;
 
@@ -268,206 +263,28 @@ public class DataFuncs {
 
                                         switch(choice) {
                                             case 1:
-                                                while (true) { //While loops in the switch cases will all keep us in for error-handling
-                                                    System.out.println("Previous map :" + arry.get(i).getMap() +
-                                                            "\nPlease enter a new map: ");
-                                                    scanner.nextLine();
-
-                                                    try {
-                                                        info = scanner.nextLine();
-
-                                                        arry.get(i).setMap(info);
-
-                                                        System.out.println("New map set to " + arry.get(i).getMap());
-                                                        break;
-                                                    }
-
-                                                    catch (Exception e) {
-                                                        System.out.println(e.getMessage());
-                                                    }
-                                                }
+                                                EditSwitchMap(arry, info, i);
                                                 break;
                                             case 2:
-                                                while (true) {
-                                                    System.out.println("Previous killer :" + arry.get(i).getKiller() +
-                                                            "\nPlease enter a new killer: ");
-                                                    scanner.nextLine();
-
-                                                    try {
-                                                        info = scanner.nextLine();
-
-                                                        arry.get(i).setKiller(info);
-
-                                                        System.out.println("New killer set to " + arry.get(i).getKiller());
-
-                                                        while(true) { //Loop for input/error-handling
-                                                            System.out.println("\nWere you the killer? (Y/N)");
-                                                            try {
-                                                                infoChar = scanner.next().charAt(0);
-
-                                                                if (infoChar == 'Y' || infoChar == 'y') {
-                                                                    arry.get(i).setKillerBool(true);
-                                                                    break;
-                                                                } else if (infoChar == 'N' || infoChar == 'n') {
-                                                                    arry.get(i).setKillerBool(false);
-                                                                    break;
-                                                                }
-                                                                else {
-                                                                    System.out.println("Invalid input. Please try again");
-                                                                }
-                                                            }
-
-                                                            catch (Exception e) {
-                                                                System.out.println(e.getMessage());
-                                                                scanner.nextLine();
-                                                            }
-                                                        }
-                                                        break;
-                                                    }
-
-                                                    catch (Exception e) {
-                                                        System.out.println(e.getMessage());
-                                                        scanner.nextLine();
-                                                    }
-                                                }
+                                                EditSwitchKiller(arry, info, i);
                                                 break;
                                             case 3:
-                                                while (true) { //Print previous survivor for confirmation, take input for new survivor
-                                                    System.out.println("Previous survivor: " + arry.get(i).getSurvivor1() +
-                                                            "\nPlease enter a new survivor: ");
-                                                    scanner.nextLine();
-
-                                                    try {
-                                                        info = scanner.nextLine();
-
-                                                        arry.get(i).setSurvivor1(info);
-
-                                                        System.out.println("New survivor set to " + arry.get(i).getSurvivor1());
-                                                        break;
-                                                    }
-
-                                                    catch (Exception e) {
-                                                        System.out.println(e.getMessage());
-                                                        scanner.nextLine();
-                                                    }
-                                                }
+                                                EditSwitchSurv1(arry, info, i);
                                                 break;
-                                            case 4: //Same logic as case 3. 5 and 6 will also be the same
-                                                while (true) {
-                                                    System.out.println("Previous survivor: " + arry.get(i).getSurvivor2() +
-                                                            "\nPlease enter a new survivor: ");
-                                                    scanner.nextLine();
-
-                                                    try {
-                                                        info = scanner.nextLine();
-
-                                                        arry.get(i).setSurvivor2(info);
-
-                                                        System.out.println("New survivor set to " + arry.get(i).getSurvivor2());
-                                                        break;
-                                                    }
-
-                                                    catch (Exception e) {
-                                                        System.out.println(e.getMessage());
-                                                        scanner.nextLine();
-                                                    }
-                                                }
+                                            case 4:
+                                                EditSwitchSurv2(arry, info, i);
                                                 break;
                                             case 5:
-                                                while (true) {
-                                                    System.out.println("Previous survivor: " + arry.get(i).getSurvivor3() +
-                                                            "\nPlease enter a new survivor: ");
-                                                    scanner.nextLine();
-
-                                                    try {
-                                                        info = scanner.nextLine();
-
-                                                        arry.get(i).setSurvivor3(info);
-
-                                                        System.out.println("New survivor set to " + arry.get(i).getSurvivor3());
-                                                        break;
-                                                    }
-
-                                                    catch (Exception e) {
-                                                        System.out.println(e.getMessage());
-                                                        scanner.nextLine();
-                                                    }
-                                                }
+                                                EditSwitchSurv3(arry, info, i);
                                                 break;
                                             case 6:
-                                                while (true) {
-                                                    System.out.println("Previous survivor: " + arry.get(i).getSurvivor4() +
-                                                            "\nPlease enter a new survivor: ");
-                                                    scanner.nextLine();
-
-                                                    try {
-                                                        info = scanner.nextLine();
-
-                                                        arry.get(i).setSurvivor4(info);
-
-                                                        System.out.println("New survivor set to " + arry.get(i).getSurvivor4());
-                                                        break;
-                                                    }
-
-                                                    catch (Exception e) {
-                                                        System.out.println(e.getMessage());
-                                                        scanner.nextLine();
-                                                    }
-                                                }
+                                                EditSwitchSurv4(arry, info, i);
                                                 break;
-                                            case 7: //Loop to keep us in until a proper input is given
-                                                while (true) {
-                                                    System.out.println("Previous disconnects: " + arry.get(i).getDisconnects() +
-                                                            "\nPlease enter new amount of disconnects: ");
-
-                                                    try {
-                                                        while (true) {
-                                                            infoInt = scanner.nextInt();
-
-                                                            if (infoInt < 0 || infoInt > 4) {
-                                                                System.out.println("\nPlease enter a number between 0 and 4\nPlease enter new amount of disconnects: ");
-                                                            } else {
-                                                                arry.get(i).setDisconnects(infoInt);
-                                                                break;
-                                                            }
-                                                        }
-
-                                                        System.out.println("New disconnects set to " + arry.get(i).getDisconnects());
-                                                        break;
-                                                    }
-
-                                                    catch (Exception e) {
-                                                        System.out.println("\nPlease enter a valid amount of disconnects!\n");
-                                                        scanner.nextLine();
-                                                    }
-                                                }
+                                            case 7:
+                                                EditSwitchDisconnects(arry, info, i, infoInt);
                                                 break;
                                             case 8: //Same logic as case 7
-                                                while (true) {
-                                                    System.out.println("Previous escapes: " + arry.get(i).getEscapes() +
-                                                            "\nPlease enter new amount of escapes: ");
-
-                                                    try {
-                                                        while (true) {
-                                                            infoInt = scanner.nextInt();
-
-                                                            if (infoInt < 0 || infoInt > 4) {
-                                                                System.out.println("\nPlease enter a number between 0 and 4\nPlease enter new amount of escapes: ");
-                                                            } else {
-                                                                arry.get(i).setEscapes(infoInt);
-                                                                break;
-                                                            }
-                                                        }
-
-                                                        System.out.println("New escapes set to " + arry.get(i).getEscapes());
-                                                        break;
-                                                    }
-
-                                                    catch (Exception e) {
-                                                        System.out.println("\nPlease enter a valid amount of escapes!\n");
-                                                        scanner.nextLine();
-                                                    }
-                                                }
+                                                EditSwitchEscapes(arry, info, i, infoInt);
                                                 break;
                                             case 9:
                                                 switchMenu = false; //Lets us exit the edit menu
@@ -502,12 +319,238 @@ public class DataFuncs {
         return 4;
     }
 
+    //-----Edit Menu Switch Functions-----
+    public boolean EditSwitchMap(ArrayList<Match> arry, String info, int i){
+        while (true) { //While loops in the switch cases will all keep us in for error-handling
+            System.out.println("Previous map :" + arry.get(i).getMap() +
+                    "\nPlease enter a new map: ");
+            scanner.nextLine();
+
+            try {
+                info = scanner.nextLine();
+
+                arry.get(i).setMap(info);
+
+                System.out.println("New map set to " + arry.get(i).getMap());
+                return true;
+            }
+
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+                return false;
+            }
+        }
+    }
+
+    public boolean EditSwitchKiller(ArrayList<Match> arry, String info, int i){
+        char infoChar;
+        while (true) {
+            System.out.println("Previous killer :" + arry.get(i).getKiller() +
+                    "\nPlease enter a new killer: ");
+            scanner.nextLine();
+
+            try {
+                info = scanner.nextLine();
+
+                arry.get(i).setKiller(info);
+
+                System.out.println("New killer set to " + arry.get(i).getKiller());
+
+                while(true) { //Loop for input/error-handling
+                    System.out.println("\nWere you the killer? (Y/N)");
+                    try {
+                        infoChar = scanner.next().charAt(0);
+
+                        if (infoChar == 'Y' || infoChar == 'y') {
+                            arry.get(i).setKillerBool(true);
+                            break;
+                        } else if (infoChar == 'N' || infoChar == 'n') {
+                            arry.get(i).setKillerBool(false);
+                            break;
+                        }
+                        else {
+                            System.out.println("Invalid input. Please try again");
+                        }
+                    }
+
+                    catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        scanner.nextLine();
+                        return false;
+                    }
+                }
+                break;
+            }
+
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+                scanner.nextLine();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean EditSwitchSurv1(ArrayList<Match> arry, String info, int i){
+        while (true) { //Print previous survivor for confirmation, take input for new survivor
+            System.out.println("Previous survivor: " + arry.get(i).getSurvivor1() +
+                    "\nPlease enter a new survivor: ");
+            scanner.nextLine();
+
+            try {
+                info = scanner.nextLine();
+
+                arry.get(i).setSurvivor1(info);
+
+                System.out.println("New survivor set to " + arry.get(i).getSurvivor1());
+                break;
+            }
+
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+                scanner.nextLine();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean EditSwitchSurv2(ArrayList<Match> arry, String info, int i){
+        while (true) { //Print previous survivor for confirmation, take input for new survivor
+            System.out.println("Previous survivor: " + arry.get(i).getSurvivor2() +
+                    "\nPlease enter a new survivor: ");
+            scanner.nextLine();
+
+            try {
+                info = scanner.nextLine();
+
+                arry.get(i).setSurvivor2(info);
+
+                System.out.println("New survivor set to " + arry.get(i).getSurvivor2());
+                break;
+            }
+
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+                scanner.nextLine();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean EditSwitchSurv3(ArrayList<Match> arry, String info, int i){
+        while (true) { //Print previous survivor for confirmation, take input for new survivor
+            System.out.println("Previous survivor: " + arry.get(i).getSurvivor3() +
+                    "\nPlease enter a new survivor: ");
+            scanner.nextLine();
+
+            try {
+                info = scanner.nextLine();
+
+                arry.get(i).setSurvivor3(info);
+
+                System.out.println("New survivor set to " + arry.get(i).getSurvivor3());
+                break;
+            }
+
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+                scanner.nextLine();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean EditSwitchSurv4(ArrayList<Match> arry, String info, int i){
+        while (true) { //Print previous survivor for confirmation, take input for new survivor
+            System.out.println("Previous survivor: " + arry.get(i).getSurvivor4() +
+                    "\nPlease enter a new survivor: ");
+            scanner.nextLine();
+
+            try {
+                info = scanner.nextLine();
+
+                arry.get(i).setSurvivor4(info);
+
+                System.out.println("New survivor set to " + arry.get(i).getSurvivor4());
+                break;
+            }
+
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+                scanner.nextLine();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean EditSwitchDisconnects(ArrayList<Match> arry, String info, int i, int infoInt){
+        while (true) {
+            System.out.println("Previous disconnects: " + arry.get(i).getDisconnects() +
+                    "\nPlease enter new amount of disconnects: ");
+
+            try {
+                while (true) {
+                    infoInt = scanner.nextInt();
+
+                    if (infoInt < 0 || infoInt > 4) {
+                        System.out.println("\nPlease enter a number between 0 and 4\nPlease enter new amount of disconnects: ");
+                    } else {
+                        arry.get(i).setDisconnects(infoInt);
+                        break;
+                    }
+                }
+
+                System.out.println("New disconnects set to " + arry.get(i).getDisconnects());
+                return true;
+            } catch (Exception e) {
+                System.out.println("\nPlease enter a valid amount of disconnects!\n");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    public boolean EditSwitchEscapes(ArrayList<Match> arry, String info, int i, int infoInt){
+        while (true) {
+            System.out.println("Previous escapes: " + arry.get(i).getEscapes() +
+                    "\nPlease enter new amount of escapes: ");
+
+            try {
+                while (true) {
+                    infoInt = scanner.nextInt();
+
+                    if (infoInt < 0 || infoInt > 4) {
+                        System.out.println("\nPlease enter a number between 0 and 4\nPlease enter new amount of escapes: ");
+                    } else {
+                        arry.get(i).setEscapes(infoInt);
+                        break;
+                    }
+                }
+
+                System.out.println("New escapes set to " + arry.get(i).getEscapes());
+                return true;
+            }
+
+            catch (Exception e) {
+                System.out.println("\nPlease enter a valid amount of escapes!\n");
+                scanner.nextLine();
+            }
+        }
+    }
+    //-----End Edit Menu Switch Functions-----
+
     public int DeleteData(ArrayList<Match> arry) {
         int id;
         int searchFlag = 0;
+        int tempID;
+        Match match;
 
         if (arry.isEmpty()) {
             System.out.println("No data available to delete!\n");
+            return 5;
         }
 
         else {
@@ -515,7 +558,7 @@ public class DataFuncs {
                 searchFlag = 0; //Sentinel so we can wait until the loops are done to say no ID was found
                 if (arry.isEmpty()) { //Otherwise it would say no ID found after each iteration
                     System.out.println("No data left in database! Exiting...\n");
-                    break;
+                    return 5;
                 }
 
                 System.out.println("\nPlease enter the Match ID of the entry you wish to delete (Enter -1 to quit): ");
@@ -527,7 +570,7 @@ public class DataFuncs {
                         break;
                     }
 
-                    else if (id < -1 || id ==0) { //No Match ID will start with 0 or be negative
+                    else if (id < -1 || id == 0) { //No Match ID will start with 0 or be negative
                         System.out.println("\nPlease enter a valid match ID\n");
                         searchFlag = 1;
                     }
@@ -536,8 +579,15 @@ public class DataFuncs {
                         scanner.nextLine();
                         for (int i = 0; i < arry.size(); i++) { //Loop through the arraylist passed and remove the instance with a matching ID
                             if (arry.get(i).getMatchNumber() == id) {
+                                tempID = arry.get(i).getMatchNumber();
                                 System.out.println("Removing Match " + (i + 1));
+                                arry.get(i).setMatchAdder();
                                 arry.remove(i);
+                                while (i < arry.size()) {
+                                    arry.get(i).setMatchID(tempID);
+                                    i++;
+                                    tempID++;
+                                }
                                 searchFlag = 1;
                                 break;
                             }
@@ -556,16 +606,18 @@ public class DataFuncs {
             }
         }
 
-        return 5;
+        scanner.nextLine();
+        return arry.size();
     }
 
-    public int DisplayWinRate(ArrayList<Match> arry) {
+    public double DisplayWinRate(ArrayList<Match> arry) {
         double wins = 0;
-        double winRate;
+        double winRate = -1;
         int matches = 0;
 
         if (arry.isEmpty()) {
             System.out.println("No data available to calculate!\n");
+            return 0;
         }
 
         else { //A win is only counted as a match played as killer with less than 2 escapes
@@ -580,14 +632,16 @@ public class DataFuncs {
 
             if (matches > 0) { //Only calculate if killer matches were found
                 winRate = (wins / matches) * 100;
+                String winRateFormat = String.format("%.2f", winRate);
                 System.out.println("Out of " + matches + " match(es), you won " + (int) wins + " times!\nWin Rate: "
-                        + winRate + "%\n");
+                        + winRateFormat + "%\n");
             }
 
             else {
                 System.out.println("No killer matches found!\n");
+                return 0;
             }
         }
-        return 6;
+        return winRate;
     }
 }
