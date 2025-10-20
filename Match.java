@@ -1,9 +1,3 @@
-/*
-Brian Oldham
-CEN3024C-14877
-12OCT2025
-Class for storing and accessing attributes of a match
- */
 public class Match {
     private static int matchAdder = 1;
     private int matchNumber;
@@ -66,6 +60,14 @@ public class Match {
 
     public void setDisconnects(int disconnects) {
         this.disconnects = disconnects;
+    }
+
+    public void setMatchID(int matchNumber) {
+        this.matchNumber = matchNumber;
+    }
+
+    public void setMatchAdder() {
+        matchAdder--;
     }
     //------END SETTERS------
 
