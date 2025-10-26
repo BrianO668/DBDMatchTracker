@@ -1,9 +1,3 @@
-/*
-Brian Oldham
-CEN3024C-14877
-26OCT2025
-Class for accessing and manipulating Match data stored in an arraylist
- */
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -149,3 +143,4 @@ public class DataFuncs {
         return winRate;
     }
 }
+
