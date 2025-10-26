@@ -1,10 +1,3 @@
-/*
-Brian Oldham
-CEN3024C-14877
-26OCT2025
-Class for running our entire GUI. Interacts with DataFuncs to perform operations
-and has many functions of its own
- */
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -439,3 +432,4 @@ public class MainWindow extends JFrame {
         return 1;
     }
 }
+
