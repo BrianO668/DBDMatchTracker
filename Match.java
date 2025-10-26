@@ -12,7 +12,7 @@ public class Match {
     private int disconnects;
 
     public Match(String killer, String survivor1, String survivor2, String survivor3, String survivor4,
-                String map, boolean wasKiller, int escapes, int disconnects) {
+                 String map, boolean wasKiller, int escapes, int disconnects) {
         this.matchNumber = matchAdder++; //Set ID then adds one to the adder for the next match. No two alike, no editing of match numbers
         this.killer = killer;
         this.survivor1 = survivor1;
@@ -23,6 +23,19 @@ public class Match {
         this.wasKiller = wasKiller;
         this.escapes = escapes;
         this.disconnects = disconnects;
+    }
+
+    public Match() { //For temporary data only
+        this.matchNumber = 0;
+        this.killer = "";
+        this.survivor1 = "";
+        this.survivor2 = "";
+        this.survivor3 = "";
+        this.survivor4 = "";
+        this.map = "";
+        this.wasKiller = false;
+        this.escapes = 0;
+        this.disconnects = 0;
     }
 
     //------SETTERS------
@@ -112,4 +125,4 @@ public class Match {
         return matchNumber;
     }
 }
-    //------END GETTERS------
+//------END GETTERS------
