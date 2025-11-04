@@ -1,9 +1,3 @@
-/*
-Brian Oldham
-CEN3024C-14877
-04NOV2025
-Class for performing SQL-related functions
- */
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -157,3 +151,4 @@ public class SQLFuncs {
         }
     }
 }
+
