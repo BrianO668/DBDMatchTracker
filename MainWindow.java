@@ -226,17 +226,17 @@ public class MainWindow extends JFrame {
                     String dbPath = selectedFile.getAbsolutePath(); System.out.println(dbPath);
 
                     try {
-                        Connection con = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+                        Connection con = DriverManager.getConnection("jdbc:sqlite:" + dbPath); //Try to connect to selected path
 
                         try (Statement st = con.createStatement()) {
-                            st.executeQuery("select * from Matches");
-                            sql = new SQLFuncs(con);
+                            st.executeQuery("select * from Matches"); //Simple query to verify connection
+                            sql = new SQLFuncs(con); //Then set up our objects and data
 
                             results = sql.GetData();
 
                             UpdateTableSQL(results);
 
-                            System.out.println("Connected to database successfully");
+                            System.out.println("Connected to database successfully"); //Visible feedback of established connection
                             connectionTextArea.setText("Connected");
                             connectionTextArea.setForeground(Color.green);
                         }
@@ -270,11 +270,11 @@ public class MainWindow extends JFrame {
                     }
                 }
                 else {
-                    GatherInfo();
+                    GatherInfo();//Get our tempy set up
                     try {
-                        sql.CreateData(tempy);
-                        results = sql.GetData();
-                        UpdateTableSQL(results);
+                        sql.CreateData(tempy);//Feed it into our SQLFuncs
+                        results = sql.GetData();//Refresh results
+                        UpdateTableSQL(results);//Update the visible table
                         ClearFields();
                     }
                     catch (Exception ex) {
@@ -306,12 +306,12 @@ public class MainWindow extends JFrame {
                 }
                 else {
                     if (FieldCheck() != -1) { //Check that info is entered properly before running the EditData function
-                        GatherInfo();
-                        int id = Integer.parseInt(matchIDTF.getText());
-                        sql.UpdateData(tempy, id);
-                        results = sql.GetData();
+                        GatherInfo(); //Set up tempy
+                        int id = Integer.parseInt(matchIDTF.getText()); //Grab the ID to pass
+                        sql.UpdateData(tempy, id); //Run the func
+                        results = sql.GetData(); //Refresh results
                         try {
-                            UpdateTableSQL(results);
+                            UpdateTableSQL(results); //Update table
                         }
                         catch (Exception ex) {
                             ex.printStackTrace();
@@ -349,10 +349,10 @@ public class MainWindow extends JFrame {
                     if (returnValue == JFileChooser.APPROVE_OPTION) { //If the JFileChooser says the selection was ok enough, we proceed
                         File selectedFile = fileChooser.getSelectedFile();
 
-                        int counter = sql.AddFromFile(selectedFile); //Runs the function and stores the return for our little window that pops up
+                        int counter = sql.AddFromFile(selectedFile); //Pass file to SQLFunc
                         try {
-                            results = sql.GetData();
-                            UpdateTableSQL(results);
+                            results = sql.GetData(); //Refresh
+                            UpdateTableSQL(results); //Update
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -390,10 +390,10 @@ public class MainWindow extends JFrame {
                 else if (!matchIDTF.getText().isEmpty()) { //Check the MatchID of the Match object currently being displayed and run the DeleteData function with that number - 1 (because indexing)
                     try {
                         int id = Integer.parseInt(matchIDTF.getText());
-                        sql.DeleteData(id);
+                        sql.DeleteData(id); //Pass ID for  deletion
                         ClearFields(); //Make the TextFields blank, so we're not seeing deleted data
-                        results = sql.GetData();
-                        UpdateTableSQL(results);
+                        results = sql.GetData();//Refresh
+                        UpdateTableSQL(results);//Update
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -403,6 +403,9 @@ public class MainWindow extends JFrame {
         });
 
         //Winrate Button Setup
+        //This function refreshes the results (to start the line at the beginning) then runs through each row and counts every
+        //match where wasKiller == true as a match and from those matches, any match with less than 2 escapes is a win
+        //Then performs the math (if any is to be done) to display your winrate
         winRateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!connectionTextArea.getText().equals("Connected")) {
@@ -540,6 +543,8 @@ public class MainWindow extends JFrame {
         else {return 0;}
     }
 
+    //SQLite doesn't have bools
+    //This is used to check the int and return an associated string
     public String killerBoolCheck(int booledInt){
         if (booledInt == 0) {
             return "false";
