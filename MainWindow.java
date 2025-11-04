@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -10,8 +11,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 public class MainWindow extends JFrame {
-    public DataFuncs funcs = new DataFuncs();
     public List<Match> tempDatabase = new ArrayList<>(); //Our database until SQLite gets involved
+    public SQLFuncs sql;
+    public ResultSet results;
 
     public JTabbedPane tabbedPane = new JTabbedPane(); //For tabs in main window
     public JPanel connectPanel = new JPanel(); //Panel become their own tabs
@@ -213,30 +215,87 @@ public class MainWindow extends JFrame {
             }
         });
 
+        //Connect Button Listener Setup
+        connectButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                int returnValue = fileChooser.showOpenDialog(null);
+
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    String dbPath = selectedFile.getAbsolutePath(); System.out.println(dbPath);
+
+                    try {
+                        Connection con = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+
+                        try (Statement st = con.createStatement()) {
+                            st.executeQuery("select * from Matches");
+                            sql = new SQLFuncs(con);
+
+                            results = sql.GetData();
+
+                            UpdateTableSQL(results);
+
+                            System.out.println("Connected to database successfully");
+                            connectionTextArea.setText("Connected");
+                            connectionTextArea.setForeground(Color.green);
+                        }
+                    }
+                    catch (Exception ex) {
+                        System.out.println("Error connecting to database");
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
         //Create Button Listener Setup
         createButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                    if (FieldCheck() == -1) { //Check if data is valid before running our ManualAdd function
-                        try {
-                            JOptionPane.showMessageDialog(MainWindow.this, "Invalid Data Entered! Please ensure" +
-                                            " all fields are filled and escapes and disconnects are between 0 and 4!",
-                                    "Error!", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
+                if (!connectionTextArea.getText().equals("Connected")) {
+                    try {
+                        JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
+                                "Error!", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-                    else {
-                        GatherInfo();
-                        funcs.ManualAdd((ArrayList<Match>) tempDatabase, tempy);
+                }
+                else if (FieldCheck() == -1) { //Check if data is valid before running our ManualAdd function
+                    try {
+                        JOptionPane.showMessageDialog(MainWindow.this, "Invalid Data Entered! Please ensure" +
+                                        " all fields are filled and escapes and disconnects are between 0 and 4!",
+                                "Error!", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
-                UpdateTable(); //Refresh the table after changes are made to keep the visible status of the database updated
+                }
+                else {
+                    GatherInfo();
+                    try {
+                        sql.CreateData(tempy);
+                        results = sql.GetData();
+                        UpdateTableSQL(results);
+                        ClearFields();
+                    }
+                    catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
             }
         });
 
         //Update Button Listener Setup
         updateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (tempDatabase.isEmpty()) {
+                if (!connectionTextArea.getText().equals("Connected")) {
+                    try {
+                        JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
+                                "Error!", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                else if (results == null) {
                     try {
                         JOptionPane.showMessageDialog(MainWindow.this, "No data in database!",
                                 "Empty Database!", JOptionPane.INFORMATION_MESSAGE);
@@ -248,8 +307,15 @@ public class MainWindow extends JFrame {
                 else {
                     if (FieldCheck() != -1) { //Check that info is entered properly before running the EditData function
                         GatherInfo();
-                        int index = Integer.parseInt(matchIDTF.getText()) - 1;
-                        funcs.EditData((ArrayList<Match>) tempDatabase, index, tempy);
+                        int id = Integer.parseInt(matchIDTF.getText());
+                        sql.UpdateData(tempy, id);
+                        results = sql.GetData();
+                        try {
+                            UpdateTableSQL(results);
+                        }
+                        catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                     else {
                         try {
@@ -261,7 +327,6 @@ public class MainWindow extends JFrame {
                             ex.printStackTrace();
                         }
                     }
-                    UpdateTable();
                 }
             }
         });
@@ -269,49 +334,70 @@ public class MainWindow extends JFrame {
         //Upload Button Listener Setup
         uploadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                int returnValue = fileChooser.showOpenDialog(null);
+                if (!connectionTextArea.getText().equals("Connected")) {
+                    try {
+                        JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
+                                "Error!", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                else {
+                    JFileChooser fileChooser = new JFileChooser();
+                    int returnValue = fileChooser.showOpenDialog(null);
 
-                if (returnValue == JFileChooser.APPROVE_OPTION) { //If the JFileChooser says the selection was ok enough, we proceed
-                    File selectedFile = fileChooser.getSelectedFile();
+                    if (returnValue == JFileChooser.APPROVE_OPTION) { //If the JFileChooser says the selection was ok enough, we proceed
+                        File selectedFile = fileChooser.getSelectedFile();
 
-                    int counter = funcs.AddFromFile((ArrayList<Match>) tempDatabase, selectedFile); //Runs the function and stores the return for our little window that pops up
-                    UpdateTable();
-                    if (counter > 0) { //Cannot return anything above 0 unless it succeeded
+                        int counter = sql.AddFromFile(selectedFile); //Runs the function and stores the return for our little window that pops up
                         try {
-                            JOptionPane.showMessageDialog(MainWindow.this, counter + " row(s) have been added!",
-                                    "Success!", JOptionPane.INFORMATION_MESSAGE);
+                            results = sql.GetData();
+                            UpdateTableSQL(results);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-                    }
-                    else {
-                        try {
-                            JOptionPane.showMessageDialog(MainWindow.this, "No rows could be added! Please try again.",
-                                    "Error!", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+                        if (counter > 0) { //Cannot return anything above 0 unless it succeeded
+                            try {
+                                JOptionPane.showMessageDialog(MainWindow.this, counter + " row(s) have been added!",
+                                        "Success!", JOptionPane.INFORMATION_MESSAGE);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        } else {
+                            try {
+                                JOptionPane.showMessageDialog(MainWindow.this, "No rows could be added! Please try again.",
+                                        "Error!", JOptionPane.INFORMATION_MESSAGE);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         }
                     }
                 }
-
             }
         });
 
         //Delete Button Listener Setup
         deleteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                    if (!matchIDTF.getText().equals("")) { //Check the MatchID of the Match object currently being displayed and run the DeleteData function with that number - 1 (because indexing)
-                        try {
-                            int id = Integer.parseInt(matchIDTF.getText());
-                            System.out.println(id);
-                            funcs.DeleteData((ArrayList<Match>) tempDatabase, id);
-                            ClearFields(); //Make the TextFields blank, so we're not seeing deleted data
-                            UpdateTable();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
+                if (!connectionTextArea.getText().equals("Connected")) {
+                    try {
+                        JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
+                                "Error!", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
+                }
+                else if (!matchIDTF.getText().isEmpty()) { //Check the MatchID of the Match object currently being displayed and run the DeleteData function with that number - 1 (because indexing)
+                    try {
+                        int id = Integer.parseInt(matchIDTF.getText());
+                        sql.DeleteData(id);
+                        ClearFields(); //Make the TextFields blank, so we're not seeing deleted data
+                        results = sql.GetData();
+                        UpdateTableSQL(results);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
 
             }
         });
@@ -319,39 +405,67 @@ public class MainWindow extends JFrame {
         //Winrate Button Setup
         winRateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                double wr = funcs.DisplayWinRate((ArrayList<Match>) tempDatabase);
-                int wins = 0;
-                int matches = 0;
-
-                if (wr != -1) { //Coping some of the same code from the DataFunc function because I want the values for my pop-up
-                    for (Match m : tempDatabase) { //2 escapes is a draw, more than 2 is a loss
-                        if (m.getKillerBool()) { //Matches not played as killer are not calculated in this function
-                            if (m.getEscapes() < 2) {
-                                wins++;
-                            }
-                            matches++;
-                        }
-                    }
-
+                if (!connectionTextArea.getText().equals("Connected")) {
                     try {
-                        String winRateFormat = String.format("%.2f", wr);
-                        JOptionPane.showMessageDialog(MainWindow.this, "Out of " + matches + " match(es), you won "
-                                        + (int) wins + " time(s)!\nWin Rate: "
-                                        + winRateFormat + "%",
-                                "Win Rate", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                    catch (Exception ex) {
+                        JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
+                                "Error!", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 }
-
                 else {
                     try {
-                        JOptionPane.showMessageDialog(MainWindow.this, "No killer matches to display!",
-                                "Win Rate", JOptionPane.INFORMATION_MESSAGE);
+                        results = sql.GetData();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
                     }
-                    catch (Exception ex) {
-                        ex.printStackTrace();
+                    double wr;
+                    int wins = 0;
+                    int matches = 0;
+
+                    if (results != null) {
+                        try {
+                            while (results.next()) {
+                                if (results.getInt("WASKILLER") == 1) {
+                                    matches++;
+
+                                    if (results.getInt("ESCAPES") < 2) {
+                                        wins++;
+                                    }
+                                }
+                            }
+
+                            if (matches > 0) {
+                                wr = ((double) wins / matches) * 100;
+
+
+                                try {
+                                    String winRateFormat = String.format("%.2f", wr);
+                                    JOptionPane.showMessageDialog(MainWindow.this, "Out of " + matches + " match(es), you won "
+                                                    + (int) wins + " time(s)!\nWin Rate: "
+                                                    + winRateFormat + "%",
+                                            "Win Rate", JOptionPane.INFORMATION_MESSAGE);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            } else {
+                                try {
+                                    JOptionPane.showMessageDialog(MainWindow.this, "No killer matches to display!",
+                                            "Win Rate", JOptionPane.INFORMATION_MESSAGE);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            JOptionPane.showMessageDialog(MainWindow.this, "No killer matches to display!",
+                                    "Win Rate", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
             }
@@ -366,6 +480,7 @@ public class MainWindow extends JFrame {
     }
 
     public int FieldCheck() { //Used for checking that fields are filled and without data that would cause error
+        try {
         if (killerTF.getText().isEmpty()) {return -1;}
         if (surv1TF.getText().isEmpty()) {return -1;}
         if (surv2TF.getText().isEmpty()) {return -1;}
@@ -376,6 +491,12 @@ public class MainWindow extends JFrame {
         if ((Integer.parseInt(disconnectsTF.getText()) < 0 || Integer.parseInt(disconnectsTF.getText()) > 4)) {return -1;}
 
         return 1;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            return -1;
+        }
+
     }
 
     public int GatherInfo() { //Fills our temp Match object with information from the textfield, so we can pass it
@@ -395,25 +516,36 @@ public class MainWindow extends JFrame {
         return 1;
     }
 
-    //Function to keep out table updated after operations
-    public int UpdateTable () { //Refreshes the visible data in the table
-        tableModel.setRowCount(0); //Clear the rows
-        for (Match m : tempDatabase) { //Read everything, as MatchIDs change upon deletions
-            Object[] rowData = {
-                    m.getMatchNumber(),
-                    m.getKiller(),
-                    m.getKillerBool(),
-                    m.getMap(),
-                    m.getSurvivor1(),
-                    m.getSurvivor2(),
-                    m.getSurvivor3(),
-                    m.getSurvivor4(),
-                    m.getDisconnects(),
-                    m.getEscapes()
-            };
-            tableModel.addRow(rowData);
+    public int UpdateTableSQL(ResultSet rs) throws SQLException {
+        tableModel.setRowCount(0);
+        if (rs != null) {
+            while (rs.next()) {
+                int matchID = rs.getInt("MATCHID");
+                String killer = rs.getString("KILLER");
+                String wasKiller = killerBoolCheck(rs.getInt("WASKILLER"));
+                String map = rs.getString("MAP");
+                String survivor1 = rs.getString("SURVIVOR1");
+                String survivor2 = rs.getString("SURVIVOR2");
+                String survivor3 = rs.getString("SURVIVOR3");
+                String survivor4 = rs.getString("SURVIVOR4");
+                int disconnects = rs.getInt("DISCONNECTS");
+                int escapes = rs.getInt("ESCAPES");
+
+                tableModel.addRow(new Object[]{matchID, killer, wasKiller, map, survivor1, survivor2, survivor3, survivor4, disconnects, escapes});
+            }
+
+            return 1;
         }
-        return 1;
+
+        else {return 0;}
+    }
+
+    public String killerBoolCheck(int booledInt){
+        if (booledInt == 0) {
+            return "false";
+        }
+
+        else {return "true";}
     }
 
     //Function for resetting all TextFields so old data doesn't remain
@@ -432,4 +564,3 @@ public class MainWindow extends JFrame {
         return 1;
     }
 }
-
