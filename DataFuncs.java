@@ -1,3 +1,8 @@
+/*
+THIS FILE NO LONGER USED IN THE PROGRAM
+FUNCTIONS HAVE BEEN REPLACED BY SQLFuncs AS
+THIS PROGRAM NOW INTERACTS WITH SQLITE
+*/
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -143,4 +148,5 @@ public class DataFuncs {
         return winRate;
     }
 }
+
 
