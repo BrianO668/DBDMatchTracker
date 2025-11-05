@@ -287,6 +287,7 @@ public class MainWindow extends JFrame {
         //Update Button Listener Setup
         updateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                results = sql.GetData();
                 if (!connectionTextArea.getText().equals("Connected")) {
                     try {
                         JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
@@ -295,37 +296,43 @@ public class MainWindow extends JFrame {
                         ex.printStackTrace();
                     }
                 }
-                else if (results == null) {
-                    try {
-                        JOptionPane.showMessageDialog(MainWindow.this, "No data in database!",
-                                "Empty Database!", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                    catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
                 else {
-                    if (FieldCheck() != -1) { //Check that info is entered properly before running the EditData function
-                        GatherInfo(); //Set up tempy
-                        int id = Integer.parseInt(matchIDTF.getText()); //Grab the ID to pass
-                        sql.UpdateData(tempy, id); //Run the func
-                        results = sql.GetData(); //Refresh results
-                        try {
-                            UpdateTableSQL(results); //Update table
+                    try {
+                        if (!results.isBeforeFirst()) { //isBeforeFirst() returns false if there are no rows or cursor is not sitting before first entry
+                            try {
+                                JOptionPane.showMessageDialog(MainWindow.this, "No data in database!",
+                                        "Empty Database!", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                            catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         }
-                        catch (Exception ex) {
-                            ex.printStackTrace();
+                        else {
+                            if (FieldCheck() != -1) { //Check that info is entered properly before running the EditData function
+                                GatherInfo(); //Set up tempy
+                                int id = Integer.parseInt(matchIDTF.getText()); //Grab the ID to pass
+                                sql.UpdateData(tempy, id); //Run the func
+                                try {
+                                    results = sql.GetData(); //Refresh results
+                                    UpdateTableSQL(results); //Update table
+                                }
+                                catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                            else {
+                                try {
+                                    JOptionPane.showMessageDialog(MainWindow.this, "Invalid Data Entered! Please ensure" +
+                                                    " all fields are filled and escapes and disconnects are between 0 and 4!",
+                                            "Error!", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                                catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
                         }
-                    }
-                    else {
-                        try {
-                            JOptionPane.showMessageDialog(MainWindow.this, "Invalid Data Entered! Please ensure" +
-                                            " all fields are filled and escapes and disconnects are between 0 and 4!",
-                                    "Error!", JOptionPane.INFORMATION_MESSAGE);
-                        }
-                        catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
                     }
                 }
             }
