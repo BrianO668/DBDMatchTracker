@@ -287,7 +287,6 @@ public class MainWindow extends JFrame {
         //Update Button Listener Setup
         updateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                results = sql.GetData();
                 if (!connectionTextArea.getText().equals("Connected")) {
                     try {
                         JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
@@ -298,6 +297,7 @@ public class MainWindow extends JFrame {
                 }
                 else {
                     try {
+                        results = sql.GetData();
                         if (!results.isBeforeFirst()) { //isBeforeFirst() returns false if there are no rows or cursor is not sitting before first entry
                             try {
                                 JOptionPane.showMessageDialog(MainWindow.this, "No data in database!",
@@ -576,3 +576,4 @@ public class MainWindow extends JFrame {
         return 1;
     }
 }
+
