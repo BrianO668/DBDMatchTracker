@@ -10,6 +10,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+/**
+ * MainWindow class: The bulk of this program. Contains all the panels, textboxes, buttons, and tables needed to
+ * display our SQLite data. This MainWindow class is essentially the entire GUI instantiated in the main method
+ * of the Main class. Extends JFrame for initializations.
+ */
 public class MainWindow extends JFrame {
     public List<Match> tempDatabase = new ArrayList<>(); //Our database until SQLite gets involved
     public SQLFuncs sql;
@@ -63,11 +68,21 @@ public class MainWindow extends JFrame {
     //Set up our temp Match object for usages that won't continue to affect our MatchAdder
     Match tempy = new Match();
 
+    /**
+     * MainWindow constructor: Allows us to call the parent class's initializer and run our Init method which sets
+     * our GUI up.
+     */
     public MainWindow() {
         super();
         init();
     }
 
+    /**
+     * Init method: Contains everything needed for GUI initialization.
+     * All object placements such as textboxes, labels, and buttons.
+     * Also contains action listeners for each button.
+     * Packed in a specific order to assemble the window in the way we see fit.
+     */
     private void init() {
         JFrame.setDefaultLookAndFeelDecorated(true); //Generic window setup
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -217,6 +232,12 @@ public class MainWindow extends JFrame {
 
         //Connect Button Listener Setup
         connectButton.addActionListener(new ActionListener() {
+            /**
+             * Connect Button Action: this method gets passed an action (the button being clicked),
+             * and pops up a file chooser, so that the user may select a database to connect to.
+             * @param e the event to be processed
+             * @throws SQLException if a database error occurs.
+             */
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
                 int returnValue = fileChooser.showOpenDialog(null);
@@ -251,23 +272,22 @@ public class MainWindow extends JFrame {
 
         //Create Button Listener Setup
         createButton.addActionListener(new ActionListener() {
+            /**
+             * Create Button Action: this method gets passed an action (the button being clicked),
+             * and the runs the necessary SQL commands for creating data if the database is connected.
+             * If not, an error window will pop up.
+             * @param e the event to be processed
+             * @throws SQLException if a database error occurs.
+             */
             public void actionPerformed(ActionEvent e) {
                 if (!connectionTextArea.getText().equals("Connected")) {
-                    try {
-                        JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
-                                "Error!", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                    JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
+                            "Error!", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else if (FieldCheck() == -1) { //Check if data is valid before running our ManualAdd function
-                    try {
-                        JOptionPane.showMessageDialog(MainWindow.this, "Invalid Data Entered! Please ensure" +
-                                        " all fields are filled and escapes and disconnects are between 0 and 4!",
-                                "Error!", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                    JOptionPane.showMessageDialog(MainWindow.this, "Invalid Data Entered! Please ensure" +
+                                    " all fields are filled and escapes and disconnects are between 0 and 4!",
+                            "Error!", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else {
                     GatherInfo();//Get our tempy set up
@@ -286,26 +306,23 @@ public class MainWindow extends JFrame {
 
         //Update Button Listener Setup
         updateButton.addActionListener(new ActionListener() {
+            /**
+             * Update Button Action: this method gets passed an action (the button being clicked),
+             * and the runs the necessary SQL commands for updating data of the selected row.
+             * @param e the event to be processed
+             * @throws SQLException if a database error occurs.
+             */
             public void actionPerformed(ActionEvent e) {
                 if (!connectionTextArea.getText().equals("Connected")) {
-                    try {
-                        JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
-                                "Error!", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                    JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
+                            "Error!", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else {
                     try {
                         results = sql.GetData();
                         if (!results.isBeforeFirst()) { //isBeforeFirst() returns false if there are no rows or cursor is not sitting before first entry
-                            try {
-                                JOptionPane.showMessageDialog(MainWindow.this, "No data in database!",
-                                        "Empty Database!", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                            catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
+                            JOptionPane.showMessageDialog(MainWindow.this, "No data in database!",
+                                    "Empty Database!", JOptionPane.INFORMATION_MESSAGE);
                         }
                         else {
                             if (FieldCheck() != -1) { //Check that info is entered properly before running the EditData function
@@ -321,14 +338,9 @@ public class MainWindow extends JFrame {
                                 }
                             }
                             else {
-                                try {
-                                    JOptionPane.showMessageDialog(MainWindow.this, "Invalid Data Entered! Please ensure" +
-                                                    " all fields are filled and escapes and disconnects are between 0 and 4!",
-                                            "Error!", JOptionPane.INFORMATION_MESSAGE);
-                                }
-                                catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
+                                JOptionPane.showMessageDialog(MainWindow.this, "Invalid Data Entered! Please ensure" +
+                                                " all fields are filled and escapes and disconnects are between 0 and 4!",
+                                        "Error!", JOptionPane.INFORMATION_MESSAGE);
                             }
                         }
                     } catch (SQLException ex) {
@@ -340,14 +352,17 @@ public class MainWindow extends JFrame {
 
         //Upload Button Listener Setup
         uploadButton.addActionListener(new ActionListener() {
+            /**
+             * Upload Button Action: this method gets passed an action (the button being clicked),
+             * and pops up a file chooser for locating a file containing properly formatted Match data.
+             * Then it the runs the necessary SQL commands for adding all the data to the connected database.
+             * @param e the event to be processed
+             * @throws SQLException if a database error occurs.
+             */
             public void actionPerformed(ActionEvent e) {
                 if (!connectionTextArea.getText().equals("Connected")) {
-                    try {
-                        JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
-                                "Error!", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                    JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
+                            "Error!", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else {
                     JFileChooser fileChooser = new JFileChooser();
@@ -364,19 +379,11 @@ public class MainWindow extends JFrame {
                             ex.printStackTrace();
                         }
                         if (counter > 0) { //Cannot return anything above 0 unless it succeeded
-                            try {
-                                JOptionPane.showMessageDialog(MainWindow.this, counter + " row(s) have been added!",
-                                        "Success!", JOptionPane.INFORMATION_MESSAGE);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
+                            JOptionPane.showMessageDialog(MainWindow.this, counter + " row(s) have been added!",
+                                    "Success!", JOptionPane.INFORMATION_MESSAGE);
                         } else {
-                            try {
-                                JOptionPane.showMessageDialog(MainWindow.this, "No rows could be added! Please try again.",
-                                        "Error!", JOptionPane.INFORMATION_MESSAGE);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
+                            JOptionPane.showMessageDialog(MainWindow.this, "No rows could be added! Please try again.",
+                                    "Error!", JOptionPane.INFORMATION_MESSAGE);
                         }
                     }
                 }
@@ -385,16 +392,18 @@ public class MainWindow extends JFrame {
 
         //Delete Button Listener Setup
         deleteButton.addActionListener(new ActionListener() {
+            /**
+             * Delete Button Action: this method gets passed an action (the button being clicked),
+             * and the runs the necessary SQL commands for deleting the data of the selected row.
+             * @param e the event to be processed
+             * @throws SQLException if a database error occurs.
+             */
             public void actionPerformed(ActionEvent e) {
                 if (!connectionTextArea.getText().equals("Connected")) {
-                    try {
-                        JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
-                                "Error!", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                    JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
+                            "Error!", JOptionPane.INFORMATION_MESSAGE);
                 }
-                else if (!matchIDTF.getText().isEmpty()) { //Check the MatchID of the Match object currently being displayed and run the DeleteData function with that number - 1 (because indexing)
+                else if (!matchIDTF.getText().isEmpty()) {
                     try {
                         int id = Integer.parseInt(matchIDTF.getText());
                         sql.DeleteData(id); //Pass ID for  deletion
@@ -414,14 +423,17 @@ public class MainWindow extends JFrame {
         //match where wasKiller == true as a match and from those matches, any match with less than 2 escapes is a win
         //Then performs the math (if any is to be done) to display your winrate
         winRateButton.addActionListener(new ActionListener() {
+            /**
+             * WinRate Button Action: this method gets passed an action (the button being clicked),
+             * and does the math for the win rate of all matches where the killer boolean is true.
+             * A win is considered less than two escapes. Anything more is either a draw or a loss.
+             * @param e the event to be processed
+             * @throws SQLException if a database error occurs.
+             */
             public void actionPerformed(ActionEvent e) {
                 if (!connectionTextArea.getText().equals("Connected")) {
-                    try {
-                        JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
-                                "Error!", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                    JOptionPane.showMessageDialog(MainWindow.this, "No database connected!",
+                            "Error!", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else {
                     try {
@@ -448,34 +460,21 @@ public class MainWindow extends JFrame {
                             if (matches > 0) {
                                 wr = ((double) wins / matches) * 100;
 
-
-                                try {
-                                    String winRateFormat = String.format("%.2f", wr);
-                                    JOptionPane.showMessageDialog(MainWindow.this, "Out of " + matches + " match(es), you won "
-                                                    + (int) wins + " time(s)!\nWin Rate: "
-                                                    + winRateFormat + "%",
-                                            "Win Rate", JOptionPane.INFORMATION_MESSAGE);
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
+                                String winRateFormat = String.format("%.2f", wr);
+                                JOptionPane.showMessageDialog(MainWindow.this, "Out of " + matches + " match(es), you won "
+                                                + (int) wins + " time(s)!\nWin Rate: "
+                                                + winRateFormat + "%",
+                                        "Win Rate", JOptionPane.INFORMATION_MESSAGE);
                             } else {
-                                try {
-                                    JOptionPane.showMessageDialog(MainWindow.this, "No killer matches to display!",
-                                            "Win Rate", JOptionPane.INFORMATION_MESSAGE);
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
+                                JOptionPane.showMessageDialog(MainWindow.this, "No killer matches to display!",
+                                        "Win Rate", JOptionPane.INFORMATION_MESSAGE);
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     } else {
-                        try {
-                            JOptionPane.showMessageDialog(MainWindow.this, "No killer matches to display!",
-                                    "Win Rate", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
+                        JOptionPane.showMessageDialog(MainWindow.this, "No killer matches to display!",
+                                "Win Rate", JOptionPane.INFORMATION_MESSAGE);
                     }
                 }
             }
@@ -489,6 +488,11 @@ public class MainWindow extends JFrame {
         this.setVisible(true);
     }
 
+    /**
+     * FieldCheck method: Checks that all fields entered are valid according to our definition.
+     * @return returns a -1 if any field is invalid. Returns a 1 for valid fields.
+     * @throws NumberFormatException if non-integers are entered into the escapes or disconnects fields.
+     */
     public int FieldCheck() { //Used for checking that fields are filled and without data that would cause error
         try {
         if (killerTF.getText().isEmpty()) {return -1;}
@@ -509,6 +513,11 @@ public class MainWindow extends JFrame {
 
     }
 
+    /**
+     * GatherInfo method: this method gathers the displayed information into a temporary Match object.
+     * This is used to pass into SQL functions that may add or update data.
+     * @return returns a -1 if the FieldCheck method fails, otherwise returns a 1.
+     */
     public int GatherInfo() { //Fills our temp Match object with information from the textfield, so we can pass it
         if (FieldCheck() == -1) {return -1;}
         else {
@@ -526,6 +535,13 @@ public class MainWindow extends JFrame {
         return 1;
     }
 
+    /**
+     * UpdateTableSQL method: this method clears the table and re-adds data to be displayed. This ensures
+     * data displayed is always up to date after functions occur.
+     * @param rs Gets passed a ResultSet. Data from this ResultSet is used to fill the table.
+     * @return returns a 1 if successful, otherwise returns a 0.
+     * @throws SQLException if a database error occurs.
+     */
     public int UpdateTableSQL(ResultSet rs) throws SQLException {
         tableModel.setRowCount(0);
         if (rs != null) {
@@ -552,6 +568,14 @@ public class MainWindow extends JFrame {
 
     //SQLite doesn't have bools
     //This is used to check the int and return an associated string
+
+    /**
+     * KillerBoolCheck method: as SQLite does not have booleans as a data type,
+     * this method bridges the gap between our Match object and the database by
+     * converting the SQLite killerBool integer to an actual bool for our object.
+     * @param booledInt This is the integer version of our killerBool that is stored within SQLite
+     * @return returns false to assign as a bool if the int passed is 0. Otherwise is returns true.
+     */
     public String killerBoolCheck(int booledInt){
         if (booledInt == 0) {
             return "false";
@@ -561,6 +585,13 @@ public class MainWindow extends JFrame {
     }
 
     //Function for resetting all TextFields so old data doesn't remain
+
+    /**
+     * ClearFields method: this method clears all the text boxes. It is used
+     * after deleting data so that old, deleted data is not still displayed after
+     * a deletion has actually occurred.
+     * @return returns 1 after clearing occurs.
+     */
     public int ClearFields() { //Sets the textfields to blanks, for use upon deletion
         matchIDTF.setText("");
         killerTF.setText("");
@@ -576,4 +607,3 @@ public class MainWindow extends JFrame {
         return 1;
     }
 }
-
