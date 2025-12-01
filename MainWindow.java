@@ -3,8 +3,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -16,7 +14,6 @@ import javax.swing.table.DefaultTableModel;
  * of the Main class. Extends JFrame for initializations.
  */
 public class MainWindow extends JFrame {
-    public List<Match> tempDatabase = new ArrayList<>(); //Our database until SQLite gets involved
     public SQLFuncs sql;
     public ResultSet results;
 
@@ -24,7 +21,7 @@ public class MainWindow extends JFrame {
     public JPanel connectPanel = new JPanel(); //Panel become their own tabs
     public JPanel connectNest = new JPanel(); //Go a layer deeper for layout
     public JPanel dataPanel = new JPanel();
-    public JPanel dataNestL = new JPanel();//Nested layers for layour purposes again
+    public JPanel dataNestL = new JPanel();//Nested layers for layout purposes again
     public JPanel dataNestR = new JPanel();
     public JPanel buttonNestL = new JPanel(); //3 Nests deep for layout
     public JPanel buttonNestR = new JPanel();
@@ -207,6 +204,14 @@ public class MainWindow extends JFrame {
         dataPanel.add(new JScrollPane(dataNestL));
         dataPanel.add(dataNestR);
 
+        /*
+        *
+        *
+        * ----------LISTENERS----------
+        *
+        *
+         */
+
         //Table Listener Setup
         dataTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
@@ -224,7 +229,7 @@ public class MainWindow extends JFrame {
                         disconnectsTF.setText(dataTable.getValueAt(dataTable.getSelectedRow(), 8).toString());
                         escapesTF.setText(dataTable.getValueAt(dataTable.getSelectedRow(), 9).toString());
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        System.out.println("Table Listener Error");
                     }
                 }
             }
@@ -264,7 +269,7 @@ public class MainWindow extends JFrame {
                     }
                     catch (Exception ex) {
                         System.out.println("Error connecting to database");
-                        ex.printStackTrace();
+                        System.out.println("Database Connection Error");
                     }
                 }
             }
@@ -298,7 +303,7 @@ public class MainWindow extends JFrame {
                         ClearFields();
                     }
                     catch (Exception ex) {
-                        ex.printStackTrace();
+                        System.out.println("Database Connection Error");
                     }
                 }
             }
@@ -334,7 +339,7 @@ public class MainWindow extends JFrame {
                                     UpdateTableSQL(results); //Update table
                                 }
                                 catch (Exception ex) {
-                                    ex.printStackTrace();
+                                    System.out.println("Database Connection Error");
                                 }
                             }
                             else {
@@ -376,7 +381,7 @@ public class MainWindow extends JFrame {
                             results = sql.GetData(); //Refresh
                             UpdateTableSQL(results); //Update
                         } catch (Exception ex) {
-                            ex.printStackTrace();
+                            System.out.println("Database Connection Error");
                         }
                         if (counter > 0) { //Cannot return anything above 0 unless it succeeded
                             JOptionPane.showMessageDialog(MainWindow.this, counter + " row(s) have been added!",
@@ -411,7 +416,7 @@ public class MainWindow extends JFrame {
                         results = sql.GetData();//Refresh
                         UpdateTableSQL(results);//Update
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        System.out.println("Database Connection Error");
                     }
                 }
 
@@ -462,7 +467,7 @@ public class MainWindow extends JFrame {
 
                                 String winRateFormat = String.format("%.2f", wr);
                                 JOptionPane.showMessageDialog(MainWindow.this, "Out of " + matches + " match(es), you won "
-                                                + (int) wins + " time(s)!\nWin Rate: "
+                                                + wins + " time(s)!\nWin Rate: "
                                                 + winRateFormat + "%",
                                         "Win Rate", JOptionPane.INFORMATION_MESSAGE);
                             } else {
@@ -470,7 +475,7 @@ public class MainWindow extends JFrame {
                                         "Win Rate", JOptionPane.INFORMATION_MESSAGE);
                             }
                         } catch (Exception ex) {
-                            ex.printStackTrace();
+                            System.out.println("Database Connection Error");
                         }
                     } else {
                         JOptionPane.showMessageDialog(MainWindow.this, "No killer matches to display!",
@@ -480,10 +485,18 @@ public class MainWindow extends JFrame {
             }
         });
 
+        /*
+         *
+         *
+         * ----------/LISTENERS----------
+         *
+         *
+         */
+
         int frameWidth = 900; //Set frame sizes, bounds, and make it visible
         int frameHeight = 500;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setBounds((int) screenSize.getWidth()/2 - (int) frameWidth/2, (int) screenSize.getHeight()/2 - (int) frameHeight/2,
+        this.setBounds((int) screenSize.getWidth()/2 - frameWidth /2, (int) screenSize.getHeight()/2 - frameHeight/2,
                 frameWidth, frameHeight);
         this.setVisible(true);
     }
@@ -507,7 +520,7 @@ public class MainWindow extends JFrame {
         return 1;
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+            System.out.println("Field Check Failed");
             return -1;
         }
 
@@ -574,7 +587,7 @@ public class MainWindow extends JFrame {
      * this method bridges the gap between our Match object and the database by
      * converting the SQLite killerBool integer to an actual bool for our object.
      * @param booledInt This is the integer version of our killerBool that is stored within SQLite
-     * @return returns false to assign as a bool if the int passed is 0. Otherwise is returns true.
+     * @return returns false to assign as a bool if the int passed is 0. Otherwise, it returns true.
      */
     public String killerBoolCheck(int booledInt){
         if (booledInt == 0) {
